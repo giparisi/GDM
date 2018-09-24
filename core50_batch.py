@@ -18,7 +18,6 @@ if __name__ == "__main__":
     # Set working path
     #os.getcwd()
     dataFlag = 0            # Import dataset from file
-    importFlag = 0          # Import saved network
     trainFlag = 1           # Train model
     testEpochs = 0          # Compute classification accuracy over epochs
     testContext = 1         # Use temporal context during test
