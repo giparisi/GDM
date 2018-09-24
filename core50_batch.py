@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dual-memory Batch learning (Python 3)
+Growing Dual-Memory Networks (Batch Learning)
 
 @last-modified: 8 September 2018
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dual-memory Incremental learning with memory replay (Python 3)
+Growing Dual-Memory Networks with Intrinsic Replay (Incremental Learning)
 
 @last-modified: 8 September 2018
 
