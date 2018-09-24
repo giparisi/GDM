@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Growing Dual-Memory Networks (Batch Learning)
-
 @last-modified: 8 September 2018
-
 @author: German I. Parisi (german.parisi@gmail.com)
-
 Please cite this paper: Parisi, G.I., Tani, J., Weber, C., Wermter, S. (2018) Lifelong Learning of Spatiotemporal Representations with Dual-Memory Recurrent Self-Organization. arXiv:1805.10966
 """
-
 import csv
 from episodic_gwr import EpisodicGWR
 from semantic_gwr import SemanticGWR
