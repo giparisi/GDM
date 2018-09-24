@@ -17,8 +17,7 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
     # Set working path
     #os.getcwd()
-    dataFlag = 0             # Import dataset from file
-    importFlag = 0           # Import saved network
+    dataFlag = 1             # Import dataset from file
     trainFlag = 1            # Train model
     saveFlag = 0             # Save trained network to file
     testFlag = 1             # Compute classification accuracy
