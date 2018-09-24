@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Semantic Gamma-GWR Memory
-
 @last-modified: 8 September 2018
-
 @author: German I. Parisi (german.parisi@gmail.com)
-
 Please cite this paper: Parisi, G.I., Tani, J., Weber, C., Wermter, S. (2018) Lifelong Learning of Spatiotemporal Representations with Dual-Memory Recurrent Self-Organization. arXiv:1805.10966
 """
 
@@ -13,7 +10,6 @@ import numpy as np
 import math
 
 class SemanticGWR:
-
     def initNetwork(self, dimension, numWeights, numClasses):
         self.numNodes = 2
         self.dimension = dimension
