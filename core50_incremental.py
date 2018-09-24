@@ -19,7 +19,7 @@ if __name__ == "__main__":
     #os.getcwd()
     dataFlag = 0             # Import dataset from file
     importFlag = 0           # Import saved network
-    trainFlag = 1            # Train AGWR with imported dataset
+    trainFlag = 1            # Train model
     saveFlag = 0             # Save trained network to file
     testFlag = 1             # Compute classification accuracy
     plotFlag = 0             # Plot 2D map
