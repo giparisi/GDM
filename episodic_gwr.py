@@ -295,51 +295,7 @@ class EpisodicGWR:
 
         return pWeights, pLabels
     
-    
-#        indices = np.zeros(size)
-#        
-#        for i in range(0, self.numNodes):
-#
-#            if (np.argmax(self.labelClasses[i,:])==c):
-#                pWeights.resize((pWeights.shape[0]+1, size, self.dimension), refcheck=False)
-#                pLabels.resize((pLabels.shape[0]+1, size, 2), refcheck=False)
-#                
-#                onsetNeuron = i
-#                currentIndex = pWeights.shape[0]-1
-#                indices[0] = onsetNeuron
-#                
-#                pWeights[currentIndex,0] = self.recurrentWeights[onsetNeuron,0]
-#                pLabels[currentIndex,0,0] = np.argmax(self.labelClasses[onsetNeuron])
-#                pLabels[currentIndex,0,1] = np.argmax(self.labelInstances[onsetNeuron])
-#                
-#                for r in range(1, size):
-#                    indices[r] = np.argmax(self.temporal[int(indices[r-1]), :])
-#                    pWeights[currentIndex,r] = self.recurrentWeights[int(indices[r]),0]
-#                    pLabels[currentIndex,r,0] = np.argmax(self.labelClasses[int(indices[r])])
-#                    pLabels[currentIndex,r,1] = np.argmax(self.labelInstances[int(indices[r])])          
-#
-#        return pWeights, pLabels
-        
-#    def activationTrajectories(self, size, onsetNeuron):
-#        pseudoDataPoints = np.zeros((size,self.dimension))
-#        pseudoLabels = np.zeros((size,2))
-#        indices = np.zeros((size,1))
-#        
-#        indices[0] = onsetNeuron
-#        pseudoDataPoints[0,:] = self.recurrentWeights[onsetNeuron][0]
-#        pseudoLabels[0,0] = np.argmax(self.labelClasses[onsetNeuron])
-#        pseudoLabels[0,1] = np.argmax(self.labelInstances[onsetNeuron])
-#
-#        for r in range(1, size):
-#            indices[r] = np.argmax(self.temporal[int(indices[r-1]), :])
-#            pseudoDataPoints[r,:] = self.recurrentWeights[int(indices[r])][0]
-#            pseudoLabels[r,0] = np.argmax(self.labelClasses[int(indices[r])])
-#            pseudoLabels[r,1] = np.argmax(self.labelInstances[int(indices[r])])
-#            
-#        return pseudoDataPoints, pseudoLabels
-    
-    # Test GWR ################################################################ 
-    
+    # Test GWR ################################################################  
     def predict( self, dataSet, useContext ):
         print ("Predicting ..."),
         distances = np.zeros(self.numNodes)
