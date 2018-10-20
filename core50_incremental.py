@@ -30,11 +30,11 @@ if __name__ == "__main__":
     if (trainFlag):        
             #incClasses = random.sample(range(0,numClasses), numClasses)#
             #iRun = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-            #iRun = np.array([2, 7, 1, 8, 0, 3, 9, 6, 4, 5])
             #iRun = np.array([6, 9, 5, 7, 1, 0, 3, 2, 4, 8])
             #iRun = np.array([4, 1, 6, 8, 7, 9, 5, 2, 0, 3])
-            iRun = np.array([9, 1, 2, 7, 8, 6, 4, 0, 3, 5])
-
+            #iRun = np.array([9, 1, 2, 7, 8, 6, 4, 0, 3, 5])
+            iRun = np.array([2, 7, 1, 8, 0, 3, 9, 6, 4, 5])
+            
             numWeights = [3, 3]  # size of temporal receptive field
             ee = 1               # Number of training epochs per mini-batch
             iT = [0.3, 0.001]    # insertion thresholds
@@ -76,17 +76,19 @@ if __name__ == "__main__":
                         mySemanticGWR.train(replayVectors[i], replayLabels[i,:,0], 3, iT[1], bP, lR[0], lR[1], 0, 1)
 
                 for s in range(0, c+1):
+                    
                     si = int(iRun[s])
-                    tti = int(ds.iTe[si,0])
-                    tte = int(ds.iTe[si,1])
+                    tti = int(ds.iTe[si, 0])
+                    tte = int(ds.iTe[si, 1])
 
                     emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors[tti:tte], 1)
                     emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[tti:tte,1])
-                
+                    
                     smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, 1)
-                    smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[tti:tte, 0])
+                    smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[tti:tte,0])
 
-                    accMatrix[c, s, :] = [emAccuracy, smAccuracy]
+                    accMatrix[c, s, 0] = emAccuracy
+                    accMatrix[c, s, 1] = smAccuracy
                     
                 for m in range(0, ds.numLabels):
                     aC = 0
