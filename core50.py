@@ -15,7 +15,7 @@ class CORe50:
         vec = np.array(x).astype('float')
         return  vec
     
-    def divCategories(self, vectorSet, ite) -> np.ndarray:
+    def divCategories(self, vectorSet, ite) -> (np.ndarray, np.ndarray):
         c = 0
         segData = 0
         segIndex = 0
@@ -28,7 +28,7 @@ class CORe50:
                 segData = vectorSet[i, self.categoryLabelIndex]
                 segIndex = i
                 
-        return vectorSet
+        return vectorSet, ite
         
     def loadData(self) -> None:
         # numClasses and numInstances are set here for simplicity but the
@@ -46,8 +46,8 @@ class CORe50:
         trainingSet = self.loadFile("VGG16-5fps-training-classes.csv")
         testSet = self.loadFile("VGG16-5fps-test-classes.csv")
 
-        trainingSet = self.divCategories(trainingSet, self.iTr)
-        testSet = self.divCategories(testSet, self.iTe)
+        trainingSet, self.iTr = self.divCategories(trainingSet, self.iTr)
+        testSet, self.iTe = self.divCategories(testSet, self.iTe)
                 
         # Pre-process samples and labels # 0 - classes (258), 1 - instances (259)
         self.trainingVectors = trainingSet[:, self.vectorIndex[0]:self.vectorIndex[1]]

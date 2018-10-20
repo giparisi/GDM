@@ -38,7 +38,7 @@ if __name__ == "__main__":
             numWeights = [3, 3]  # size of temporal receptive field
             ee = 1               # Number of training epochs per mini-batch
             iT = [0.3, 0.001]    # insertion thresholds
-            lR = [0.3, 0.003]    # learning rates
+            lR = [0.5, 0.005]    # learning rates
             bP = 0.7             # beta parameter
             trainWithReplay = 0  # memory replay flag
             pseudoSize = 5       # size of RNATs
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                     smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, 1)
                     smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[tti:tte, 0])
 
-                    accMatrix[c, s] = [emAccuracy, smAccuracy]
+                    accMatrix[c, s, :] = [emAccuracy, smAccuracy]
                     
                 for m in range(0, ds.numLabels):
                     aC = 0
