@@ -29,7 +29,7 @@ if __name__ == "__main__":
         print ("%s loaded." % ds.sName)
                 
     if (trainFlag):        
-        #incClasses = random.sample(range(0,numClasses), numClasses)#
+        #incClasses = random.sample(range(0,numClasses), numClasses)
         #iRun = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         #iRun = np.array([6, 9, 5, 7, 1, 0, 3, 2, 4, 8])
         #iRun = np.array([4, 1, 6, 8, 7, 9, 5, 2, 0, 3])
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         lR = [0.5, 0.005]    # learning rates
         bP = 0.7             # beta parameter
         trainWithReplay = 1  # memory replay flag
-        pseudoSize = 5       # size of RNATs
+        pseudoSize = 3       # size of RNATs
 
         # Initiliaze networks
         myEpisodicGWR = EpisodicGWR()
