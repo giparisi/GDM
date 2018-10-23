@@ -51,11 +51,13 @@ if __name__ == "__main__":
             myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, et, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
             emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
             mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, et, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
-        
-            emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
-            emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
-        
-            smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
-            smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
             
-            print ("Epoch: %s, EM: %s, SM: %s" % ((e+1), emAccuracy, smAccuracy))
+            if (testEpochs) or (e+1 == ee):
+        
+                emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
+                emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
+            
+                smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
+                smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
+                
+                print ("Epoch: %s, EM: %s, SM: %s" % ((e+1), emAccuracy, smAccuracy))
