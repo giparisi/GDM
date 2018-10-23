@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Dual-memory Batch learning
-@last-modified: 20 October 2018
+@last-modified: 23 October 2018
 @author: German I. Parisi (german.parisi@gmail.com)
 Please cite this paper: Parisi, G.I., Tani, J., Weber, C., Wermter, S. (2018) Lifelong Learning of Spatiotemporal Representations with Dual-Memory Recurrent Self-Organization. arXiv:1805.10966
 """
@@ -18,7 +18,7 @@ import numpy as np
 if __name__ == "__main__":
     dataFlag = 1            # Load dataset
     trainFlag = 1           # Train model
-    testEpochs = 0          # Compute classification accuracy over epochs
+    testEpochs = 1          # Compute classification accuracy over epochs
     testContext = 1         # Test using temporal context
 
     if (dataFlag):
@@ -29,14 +29,6 @@ if __name__ == "__main__":
         print ("%s loaded." % ds.sName)
 
     if (trainFlag):
-        # Select training order (0 to 9 category index)
-        iRun = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-        # iRun = np.array([9, 1, 2, 7, 8, 6, 4, 0, 3, 5])
-        # iRun = np.array([2, 7, 1, 8, 0, 3, 9, 6, 4, 5])
-        # iRun = np.array([6, 9, 5, 7, 1, 0, 3, 2, 4, 8])
-        # iRun = np.array([4, 1, 6, 8, 7, 9, 5, 2, 0, 3])
-        # or set randomly:
-        # incClasses = random.sample(range(0,numClasses), numClasses)
         
         numWeights = [3, 3] # size of temporal receptive field
         ee = 35             # number of training epochs
@@ -51,30 +43,48 @@ if __name__ == "__main__":
         mySemanticGWR = SemanticGWR()
         mySemanticGWR.initNetwork(ds.vecDim, numWeights[1], ds.numClasses)
         
-        if (testEpochs):
+        ef = ee if (testEpochs) else 1
+        et = 1 if (testEpochs) else ee
         
-            for e in range(0, ee):
-                myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, 1, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
-                emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
-                mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, 1, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
-            
-                emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
-                emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
-            
-                smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
-                smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
-                
-                print ("Epoch: %s, EM: %s, SM: %s" % ((e+1), emAccuracy, smAccuracy))
-        else:
-            
-            myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, ee, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
+        for e in range(0, ef):
+
+            myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, et, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
             emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
-            mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, ee, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
-            
+            mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, et, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
+        
             emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
             emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
         
             smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
             smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
             
-            print ("Accuracy - EM: %s, SM: %s" % (emAccuracy, smAccuracy))
+            print ("Epoch: %s, EM: %s, SM: %s" % ((e+1), emAccuracy, smAccuracy))
+        
+        
+#        if (testEpochs):
+#        
+#            for e in range(0, ee):
+#                myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, 1, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
+#                emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
+#                mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, 1, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
+#            
+#                emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
+#                emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
+#            
+#                smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
+#                smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
+#                
+#                print ("Epoch: %s, EM: %s, SM: %s" % ((e+1), emAccuracy, smAccuracy))
+#        else:
+#            
+#            myEpisodicGWR.train(ds.trainingVectors, ds.trainingLabels, ee, iT[0], bP, lR[0], lR[1], context=1, regulated=0)
+#            emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
+#            mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, ee, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
+#            
+#            emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
+#            emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
+#        
+#            smBmuWeights, smBmuActivation, smBmuLabelClasses = mySemanticGWR.predict(emBmuWeights, testContext)
+#            smAccuracy = mySemanticGWR.computeAccuracy(smBmuLabelClasses, ds.testLabels[:,0])
+#            
+#            print ("Accuracy - EM: %s, SM: %s" % (emAccuracy, smAccuracy))
