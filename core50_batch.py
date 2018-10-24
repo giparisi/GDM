@@ -13,8 +13,6 @@ from core50 import CORe50
 #import csv
 #import random
 
-# Main ########################################################################
-
 if __name__ == "__main__":
     dataFlag = 1            # Load dataset
     trainFlag = 1           # Train model
