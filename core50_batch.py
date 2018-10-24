@@ -9,7 +9,7 @@ Please cite this paper: Parisi, G.I., Tani, J., Weber, C., Wermter, S. (2018) Li
 from episodic_gwr import EpisodicGWR
 from semantic_gwr import SemanticGWR
 from core50 import CORe50
-import numpy as np
+#import numpy as np
 #import csv
 #import random
 
