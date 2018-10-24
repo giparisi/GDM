@@ -52,7 +52,7 @@ if __name__ == "__main__":
             emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
             mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, et, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
             
-            if (testEpochs) or (not testEpochs and e == ef):
+            if (testEpochs) or (not testEpochs and e+1 == ef):
         
                 emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
                 emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
