@@ -18,7 +18,7 @@ import numpy as np
 if __name__ == "__main__":
     dataFlag = 1            # Load dataset
     trainFlag = 1           # Train model
-    testEpochs = 1          # Compute classification accuracy over epochs
+    testEpochs = 0          # Compute classification accuracy over epochs
     testContext = 1         # Test using temporal context
 
     if (dataFlag):
@@ -52,7 +52,7 @@ if __name__ == "__main__":
             emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.trainingVectors, 1)
             mySemanticGWR.train(emBmuWeights, emBmuLabelClasses, et, iT[1], bP, lR[0], lR[1], context=1, regulated=1)
             
-            if (testEpochs) or (e+1 == ee):
+            if (testEpochs) or (not testEpochs and e == ef):
         
                 emBmuWeights, emBmuActivation, emBmuLabelClasses, emBmuLabelInstances = myEpisodicGWR.predict(ds.testVectors, testContext)
                 emAccuracy = myEpisodicGWR.computeAccuracy(emBmuLabelInstances, ds.testLabels[:,1])
