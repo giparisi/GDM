@@ -131,7 +131,7 @@ class EpisodicGWR(GammaGWR):
                 
                 # Generate input sample
                 self.g_context[0] = ds_vectors[iteration]
-                label = ds_labels[:,iteration]
+                label = ds_labels[:, iteration]
                 
                 # Update global context
                 for z in range(1, self.depth):

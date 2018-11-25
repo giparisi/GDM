@@ -61,8 +61,7 @@ class GammaGWR:
         second_best = kwargs.get('second_best', False)
         distances = np.zeros(self.num_nodes)
         for i in range(0, self.num_nodes):
-            distances[i] = self.compute_distance(self.weights[i], input_vector)
-        
+            distances[i] = self.compute_distance(self.weights[i], input_vector)        
         if second_best:
             # Compute best and second-best matching units
             return self.find_bs(distances)
@@ -165,22 +164,9 @@ class GammaGWR:
         print ("(-- Removed %s neuron(s))" % rem_c)
 
     def find_bs(self, dis):
-        if dis[0] < dis[1]:
-            b_index = 0
-            s_index = 1
-        else:
-            b_index = 1
-            s_index = 0
-    
-        for i in range(2, self.num_nodes):
-            if dis[i] < dis[s_index]:
-                if dis[i] < dis[b_index]:
-                    s_index = b_index
-                    b_index = i
-                else:
-                    if i != b_index:
-                        s_index = i
-
+        b_index = np.argmin(dis)
+        dis[b_index] = 9999
+        s_index = np.argmin(dis)
         return b_index, dis[b_index], s_index
                 
     def train_agwr(self, ds, epochs, a_threshold, beta, learning_rates):
