@@ -107,15 +107,16 @@ if __name__ == "__main__":
                     
                     g_semantic.train_egwr(replay_weights[r], replay_labels[r], epochs,
                                           a_threshold[1], beta, learning_rates, 0, 1)
-                  
-            g_semantic.test(e_weights, e_labels, test_accuracy=True)
             
             # Generate pseudo-samples
             if train_replay:
                 replay_weights, replay_labels = replay_samples(g_episodic, replay_size)
             
             n_episodes += 1
-
+            
+        g_episodic.test(ds_vectors, ds_labels, test_accuracy=True)
+        g_semantic.test(e_weights, e_labels, test_accuracy=True)
+        
     print("Accuracy episodic: %s, semantic: %s" % 
           (g_episodic.test_accuracy[0], g_semantic.test_accuracy[0]))
     
