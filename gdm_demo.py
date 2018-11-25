@@ -67,15 +67,10 @@ if __name__ == "__main__":
         g_episodic.train_egwr(ds_vectors, ds_labels, epochs, a_threshold[0],
                               beta, learning_rates, context, regulated=0)
                               
-        e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels,
-                                              test_accuracy=True,
-                                              ret_vecs=True)
+        e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels, ret_vecs=True)
         # Train semantic memory
         g_semantic.train_egwr(e_weights, e_labels, epochs, a_threshold[1], beta, 
-                          learning_rates, context, regulated=1)
-                          
-        g_semantic.test(e_weights, e_labels, test_accuracy=True)
-        
+                          learning_rates, context, regulated=1)        
     else:
         # Incremental training
         n_episodes = 0
@@ -91,9 +86,7 @@ if __name__ == "__main__":
                                   epochs, a_threshold[0], beta, learning_rates, context,
                                   regulated=0)
             
-            e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels,
-                                                  test_accuracy=True,
-                                                  ret_vecs=True)
+            e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels, ret_vecs=True)
             # Train semantic memory
             g_semantic.train_egwr(e_weights[s:s+batch_size], e_labels[:, s:s+batch_size],
                                   epochs, a_threshold[1], beta, learning_rates, context,
@@ -114,8 +107,8 @@ if __name__ == "__main__":
             
             n_episodes += 1
             
-        g_episodic.test(ds_vectors, ds_labels, test_accuracy=True)
-        g_semantic.test(e_weights, e_labels, test_accuracy=True)
+    g_episodic.test(ds_vectors, ds_labels, test_accuracy=True)
+    g_semantic.test(e_weights, e_labels, test_accuracy=True)
         
     print("Accuracy episodic: %s, semantic: %s" % 
           (g_episodic.test_accuracy[0], g_semantic.test_accuracy[0]))
