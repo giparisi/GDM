@@ -11,43 +11,45 @@ import math
 from gammagwr import GammaGWR
 
 class EpisodicGWR(GammaGWR):
-    
-    def __init__(self, ds, e_labels, num_context):
 
-        if ds is not None:
-            # Number of neurons
-            self.num_nodes = 2
-            # Dimensionality of weights
-            self.dimension = ds.vectors.shape[1]
-            # Start with two neurons with context
-            self.num_context = num_context
-            self.depth = self.num_context + 1
-            self.weights = np.zeros((self.num_nodes, self.depth, self.dimension))
-            # Global context
-            self.g_context = np.zeros((self.depth, self.dimension))         
-            # Temporal connections
-            self.temporal = np.zeros((self.num_nodes, self.num_nodes))               
-            # Habituation counters
-            self.habn = np.ones(self.num_nodes)
-            # Connectivity matrix
-            self.edges = np.ones((self.num_nodes, self.num_nodes))
-            # Age matrix
-            self.ages = np.zeros((self.num_nodes, self.num_nodes))
-            # Label histogram
-            self.num_labels = e_labels
-            self.alabels = []
-            for l in range(0, len(self.num_labels)):
-                self.alabels.append(-np.ones((self.num_nodes, self.num_labels[l])))
-            init_ind = list(range(0, self.num_nodes))
-            for i in range(0, len(init_ind)):
-                self.weights[i, 0] = ds.vectors[i]
-                
-            # Context coefficients
-            self.alphas = self.compute_alphas(self.depth)
-            
+    def __init__(self):
+        self.iterations = 0
+    
+    def init_network(self, ds, e_labels, num_context) -> None:
+        assert self.iterations < 1, "Can't initialize a trained network"
+        assert ds is not None, "Need a dataset to initialize a network"
         # Keep unlocked to train. Lock to prevent training.
         self.locked = False
-
+        # Number of neurons
+        self.num_nodes = 2
+        # Dimensionality of weights
+        self.dimension = ds.vectors.shape[1]
+        # Start with two neurons with context
+        self.num_context = num_context
+        self.depth = self.num_context + 1
+        self.weights = np.zeros((self.num_nodes, self.depth, self.dimension))
+        # Global context
+        self.g_context = np.zeros((self.depth, self.dimension))         
+        # Temporal connections
+        self.temporal = np.zeros((self.num_nodes, self.num_nodes))               
+        # Habituation counters
+        self.habn = np.ones(self.num_nodes)
+        # Connectivity matrix
+        self.edges = np.ones((self.num_nodes, self.num_nodes))
+        # Age matrix
+        self.ages = np.zeros((self.num_nodes, self.num_nodes))
+        # Label histogram
+        self.num_labels = e_labels
+        self.alabels = []
+        for l in range(0, len(self.num_labels)):
+            self.alabels.append(-np.ones((self.num_nodes, self.num_labels[l])))
+        init_ind = list(range(0, self.num_nodes))
+        for i in range(0, len(init_ind)):
+            self.weights[i, 0] = ds.vectors[i]
+            
+        # Context coefficients
+        self.alphas = self.compute_alphas(self.depth)
+            
     def update_temporal(self, current_ind, previous_ind, **kwargs):
         new_node = kwargs.get('new_node', False)
         if new_node:
@@ -75,37 +77,40 @@ class EpisodicGWR(GammaGWR):
                 self.alabels[l] = np.concatenate((self.alabels[l], new_alabel), axis=0)
 
     def remove_isolated_nodes(self):
-        ind_c = 0
-        rem_c = 0
-        while (ind_c < self.num_nodes):
-            neighbours = np.nonzero(self.edges[ind_c])            
-            if len(neighbours[0]) < 1:
-                self.weights = np.delete(self.weights, ind_c, axis=0)
-                for d in range(0, len(self.num_labels)):
-                    d_labels = self.alabels[d]
-                    self.alabels[d] = np.delete(d_labels, ind_c, axis=0)
-                self.edges = np.delete(self.edges, ind_c, axis=0)
-                self.edges = np.delete(self.edges, ind_c, axis=1)
-                self.ages = np.delete(self.ages, ind_c, axis=0)
-                self.ages = np.delete(self.ages, ind_c, axis=1)
-                self.temporal = np.delete(self.temporal, ind_c, axis=0)
-                self.temporal = np.delete(self.temporal, ind_c, axis=1)
-                self.habn = np.delete(self.habn, ind_c)
-                self.num_nodes -= 1
-                rem_c += 1
-            else:
-                ind_c += 1
-        print ("(-- Removed %s neuron(s))" % rem_c)
+        if self.num_nodes > 2:
+            ind_c = 0
+            rem_c = 0
+            while (ind_c < self.num_nodes):
+                neighbours = np.nonzero(self.edges[ind_c])            
+                if len(neighbours[0]) < 1:
+                    if self.num_nodes > 2:
+                        self.weights = np.delete(self.weights, ind_c, axis=0)
+                        for d in range(0, len(self.num_labels)):
+                            d_labels = self.alabels[d]
+                            self.alabels[d] = np.delete(d_labels, ind_c, axis=0)
+                        self.edges = np.delete(self.edges, ind_c, axis=0)
+                        self.edges = np.delete(self.edges, ind_c, axis=1)
+                        self.ages = np.delete(self.ages, ind_c, axis=0)
+                        self.ages = np.delete(self.ages, ind_c, axis=1)
+                        self.temporal = np.delete(self.temporal, ind_c, axis=0)
+                        self.temporal = np.delete(self.temporal, ind_c, axis=1)
+                        self.habn = np.delete(self.habn, ind_c)
+                        self.num_nodes -= 1
+                        rem_c += 1
+                    else: return
+                else:
+                    ind_c += 1
+            print ("(-- Removed %s neuron(s))" % rem_c)
          
     def train_egwr(self, ds_vectors, ds_labels, epochs, a_threshold, beta, 
-                   learning_rates, context, regulated):
+                   l_rates, context, regulated):
         
         assert not self.locked, "Network is locked. Unlock to train."
         
         self.samples = ds_vectors.shape[0]        
         self.max_epochs = epochs
         self.a_threshold = a_threshold   
-        self.epsilon_b, self.epsilon_n = learning_rates
+        self.epsilon_b, self.epsilon_n = l_rates
         self.beta = beta
         self.regulated = regulated
         self.context = context
@@ -138,10 +143,10 @@ class EpisodicGWR(GammaGWR):
                     self.g_context[z] = (self.beta * previous_bmu[z]) + ((1-self.beta) * previous_bmu[z-1])
                 
                 # Find the best and second-best matching neurons
-                b_index, b_distance, s_index = self.find_bmus(self.g_context, second_best=True)
+                b_index, b_distance, s_index = super().find_bmus(self.g_context,
+                                                              s_best=True)
                 
                 b_label = np.argmax(self.alabels[0][b_index])
-                
                 misclassified = b_label != label[0]
                 
                 # Quantization error
@@ -175,7 +180,6 @@ class EpisodicGWR(GammaGWR):
                         super().habituate_node(n_index, self.tau_b, new_node=True)
                     
                     else:
-    
                         # Habituate BMU
                         super().habituate_node(b_index, self.tau_b)
     
@@ -200,6 +204,8 @@ class EpisodicGWR(GammaGWR):
                         # Update BMU's neighbors
                         super().update_neighbors(b_index, n_rate)
                         
+                self.iterations += 1
+                    
                 previous_ind = b_index
 
             # Remove old edges
@@ -212,8 +218,6 @@ class EpisodicGWR(GammaGWR):
             
         # Remove isolated neurons
         self.remove_isolated_nodes()
-        
-        print("Network size: %s" % self.num_nodes)
 
     def test(self, ds_vectors, ds_labels, **kwargs):
         test_accuracy = kwargs.get('test_accuracy', False)

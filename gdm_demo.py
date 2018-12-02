@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Dual-memory Incremental learning with memory replay
-@last-modified: 23 November 2018
+@last-modified: 30 November 2018
 @author: German I. Parisi (german.parisi@gmail.com)
 
 """
@@ -16,10 +16,8 @@ def replay_samples(net, size) -> (np.ndarray, np.ndarray):
     r_labels = np.zeros((net.num_nodes, len(net.num_labels), size))
     for i in range(0, net.num_nodes):
         for r in range(0, size):
-            if r == 0:
-                samples[r] = i
-            else:
-                samples[r] = np.argmax(net.temporal[int(samples[r-1]), :])
+            if r == 0: samples[r] = i
+            else: samples[r] = np.argmax(net.temporal[int(samples[r-1]), :])
             r_weights[i, r] = net.weights[int(samples[r]), 0]
             for l in range(0, len(net.num_labels)):
                 r_labels[i, l, r] = np.argmax(net.alabels[l][int(samples[r])])
@@ -58,8 +56,11 @@ if __name__ == "__main__":
     learning_rates = [0.2, 0.001]
     context = True
     
-    g_episodic = EpisodicGWR(ds_iris, e_labels, num_context)
-    g_semantic = EpisodicGWR(ds_iris, s_labels, num_context)
+    g_episodic = EpisodicGWR()
+    g_episodic.init_network(ds_iris, e_labels, num_context)
+    
+    g_semantic = EpisodicGWR()
+    g_semantic.init_network(ds_iris, s_labels, num_context)
     
     if train_type == 0:
         # Batch training
@@ -67,7 +68,8 @@ if __name__ == "__main__":
         g_episodic.train_egwr(ds_vectors, ds_labels, epochs, a_threshold[0],
                               beta, learning_rates, context, regulated=0)
                               
-        e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels, ret_vecs=True)
+        e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels,
+                                              ret_vecs=True)
         # Train semantic memory
         g_semantic.train_egwr(e_weights, e_labels, epochs, a_threshold[1], beta, 
                           learning_rates, context, regulated=1)        
@@ -82,28 +84,34 @@ if __name__ == "__main__":
         
         # Train episodic memory
         for s in range(0, ds_vectors.shape[0], batch_size):
-            g_episodic.train_egwr(ds_vectors[s:s+batch_size], ds_labels[:, s:s+batch_size],
-                                  epochs, a_threshold[0], beta, learning_rates, context,
-                                  regulated=0)
+            g_episodic.train_egwr(ds_vectors[s:s+batch_size],
+                                  ds_labels[:, s:s+batch_size],
+                                  epochs, a_threshold[0], beta, learning_rates,
+                                  context, regulated=0)
             
-            e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels, ret_vecs=True)
+            e_weights, e_labels = g_episodic.test(ds_vectors, ds_labels,
+                                                  ret_vecs=True)
             # Train semantic memory
-            g_semantic.train_egwr(e_weights[s:s+batch_size], e_labels[:, s:s+batch_size],
-                                  epochs, a_threshold[1], beta, learning_rates, context,
-                                  regulated=1)    
+            g_semantic.train_egwr(e_weights[s:s+batch_size],
+                                  e_labels[:, s:s+batch_size],
+                                  epochs, a_threshold[1], beta, learning_rates,
+                                  context, regulated=1)
                                   
             if train_replay and n_episodes > 0:
                 # Replay pseudo-samples
                 for r in range(0, replay_weights.shape[0]):
-                    g_episodic.train_egwr(replay_weights[r], replay_labels[r, :], epochs,
-                                          a_threshold[0], beta, learning_rates, 0, 0)
+                    g_episodic.train_egwr(replay_weights[r], replay_labels[r, :],
+                                          epochs, a_threshold[0], beta,
+                                          learning_rates, 0, 0)
                     
-                    g_semantic.train_egwr(replay_weights[r], replay_labels[r], epochs,
-                                          a_threshold[1], beta, learning_rates, 0, 1)
+                    g_semantic.train_egwr(replay_weights[r], replay_labels[r],
+                                          epochs, a_threshold[1], beta, 
+                                          learning_rates, 0, 1)
             
             # Generate pseudo-samples
-            if train_replay:
-                replay_weights, replay_labels = replay_samples(g_episodic, replay_size)
+            if train_replay: 
+                replay_weights, replay_labels = replay_samples(g_episodic, 
+                                                               replay_size)
             
             n_episodes += 1
             

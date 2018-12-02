@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gwr-tb :: utilities
-@last-modified: 17 November 2018
+@last-modified: 30 November 2018
 @author: German I. Parisi (german.parisi@gmail.com)
 
 """
@@ -17,7 +17,7 @@ def import_network(file_name, NetworkClass):
     file = open(file_name, 'br')
     data_pickle = file.read()
     file.close()
-    net = NetworkClass(ds=None, random=False)
+    net = NetworkClass()
     net.__dict__ = pickle.loads(data_pickle)
     return net
     
