@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 gwr-tb :: utilities
-@last-modified: 30 November 2018
 @author: German I. Parisi (german.parisi@gmail.com)
 
 """
@@ -53,21 +51,30 @@ def plot_network(net, edges, labels) -> None:
     # For better visualization, PCA over weight vectors must be performed.
     ccc = ['black','blue','red','green','yellow','cyan','magenta','0.75','0.15','1']
     plt.figure()
-    if len(net.weights.shape) < 3: nw = net.weights
-    else: nw = net.weights[:, 0, :]
-        
+    dim_net = True if len(net.weights[0].shape) < 2 else False
     for ni in range(len(net.weights)):
         plindex = np.argmax(net.alabels[ni])
         if labels:
-            plt.scatter(nw[ni,0], nw[ni,1], color=ccc[plindex], alpha=.5)
+            if dim_net:
+                plt.scatter(net.weights[ni][0], net.weights[ni][1], color=ccc[plindex], alpha=.5)
+            else:
+                plt.scatter(net.weights[ni][0, 0], net.weights[ni][0, 1], color=ccc[plindex], alpha=.5)
         else:
-            plt.scatter(nw[ni,0], nw[ni,1], alpha=.5)
+            if dim_net:
+                plt.scatter(net.weights[ni][0], net.weights[ni][1], alpha=.5)
+            else:
+                plt.scatter(net.weights[ni][0, 0], net.weights[ni][0, 1], alpha=.5)
         if edges:
             for nj in range(len(net.weights)):
-                if  net.edges[ni,nj] > 0:
-                    plt.plot([nw[ni,0], nw[nj,0]], 
-                             [nw[ni,1], nw[nj,1]],
-                             'gray', alpha=.3)
+                if  net.edges[ni, nj] > 0:
+                    if dim_net:
+                        plt.plot([net.weights[ni][0], net.weights[nj][0]], 
+                                 [net.weights[ni][1], net.weights[nj][1]],
+                                 'gray', alpha=.3)
+                    else:
+                        plt.plot([net.weights[ni][0, 0], net.weights[nj][0, 0]], 
+                                 [net.weights[ni][0, 1], net.weights[nj][0, 1]],
+                                 'gray', alpha=.3)                        
     plt.show()
 
 class IrisDataset:
